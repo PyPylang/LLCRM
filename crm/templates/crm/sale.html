@@ -1,0 +1,75 @@
+{% extends 'backend_base.html' %}
+{% load crm_tags %}
+{% include 'bootstrap_css.html' %}
+{% block style %}
+    <style>
+        .content {
+            margin-left: 20px;
+        }
+
+        tbody a:hover {
+            text-decoration: none;
+            color: black;
+        }
+
+        .content table {
+            font-size: 15px;
+        }
+    </style>
+{% endblock %}
+{% block content %}
+    <div class="content">
+        <p style="padding-top: 20px;padding-bottom:20px;font-size: 25px">客户至上</p>
+        <form class="form-horizontal" method="post" style="margin-left: 20px;">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="exampleInputEmail1">选择客户： </label>
+                <select name='customer_id' class="form-control" style="width: 50%">
+                    {% customer request.session.username %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="exampleInputEmail1">选择订单： </label>
+                <select name='classlist_id' class="form-control" style="width: 50%">
+                    {% classlist %}
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-primary">生成合同</button>
+        </form>
+        <div class="form-group">
+            {% if link %}
+                <p>合同链接已生成：{{ link }}</p>
+            {% endif %}
+        </div>
+        <a style="margin-left: 20px;" href="/sale/enrollment/{{ customer_id }}/" class="btn btn-primary">下一步</a>
+    </div>
+    <div>
+        <table class="table table-bordered" style="margin-left: 20px;margin-top: 20px">
+            <thead>
+            <tr>
+                <th>客户</th>
+                <th>咨询产品</th>
+                <th>是否同意签约</th>
+                <th>已签合同</th>
+                <th>签约日期</th>
+                <th>审核日期</th>
+                <th>合同链接</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for enrollment_obj in enrollment_objs %}
+                <tr>
+                    <td>{% format enrollment_obj "customer" enrollment_obj.customer %}</td>
+                    <td>{% format enrollment_obj "class_grade" enrollment_obj.class_grade %}</td>
+                    <td>{% format enrollment_obj "contract_agreed" enrollment_obj.contract_agreed %}</td>
+                    <td>{% format enrollment_obj "contract_approved" enrollment_obj.contract_approved %}</td>
+                    <td>{% format enrollment_obj "contract_signed_date" enrollment_obj.contract_signed_date %}</td>
+                    <td>{% format enrollment_obj "contract_approved_date" enrollment_obj.contract_approved_date %} </td>
+                    <td><a href="{{ enrollment_obj.link }}">{% format enrollment_obj "link" enrollment_obj.link %}</a></td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

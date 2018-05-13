@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>签订合同</title>
+    <link rel="icon" href="/static/site_img/icon.jpg">
+    {% include 'bootstrap_css.html' %}
+    {% load crm_tags %}
+    <link href="/static/plugins/dropzone/dropzone.css" rel="stylesheet">
+    <style>
+        .content {
+            width: 1400px;
+            margin: auto;
+        }
+
+        .info {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+<div class="content">
+    <div class="panel panel-primary">
+        <div class="panel-heading"><h1>让机器人产业链的服务变得简单</h1></div>
+        <div class="panel-body">
+            {% customer_info customer_obj disabled_field %}
+            <form method="post" onsubmit=" return BeforeFormSubmit(this)"
+                  class="form-horizontal" style="margin-top: 20px">
+                {% csrf_token %}
+                <div style="width: 40%">{{ form.as_p }}</div>
+                <div class="contract">
+                    <div class="name"><h3>{{ contract_template.name }}</h3></div>
+                    <pre style="padding-left: 20px">{{ contract_template.content }}</pre>
+                </div>
+                <div class="panel-footer">
+                    <input type="checkbox" name="contract_agreed"> 我已认真阅读,无条件同意
+                    <input type="submit" class="btn btn-success" value="提交">
+                    <a href="/customer/" class="btn btn-default">返回</a>
+                </div>
+            </form>
+            <p>已上传文件列表</p>
+            <ul id="uploaded_files">
+                {% for file in uploaded_files %}
+                    <li>{{ file }}</li>
+                {% endfor %}
+            </ul>
+
+
+            <form id="myAwesomeDropzone" action="/sale/enrollment/{{ enrollment_id }}/fileupload/" class="dropzone">
+                <div class="fallback">
+                    <input name="file" type="file" multiple/>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+</body>
+<script src="/static/plugins/dropzone/dropzone.js"></script>
+<script src="/static/plugins/js/jquery-3.1.1.js"></script>
+<script>
+    function BeforeFormSubmit(ths) {
+        if ($("#uploaded_files").children().length == 0) {
+            alert("请上传证件信息!");
+            return false
+        }
+
+        if (!$("input[name='contract_agreed']").prop("checked")) {
+            alert("必须仔细阅读完合同!");
+            return false
+        }
+    }
+     // "myAwesomeDropzone" is the camelized version of the HTML element's ID
+        Dropzone.options.myAwesomeDropzone = {
+          paramName: "file", // The name that will be used to transfer the file
+          maxFilesize: 2, // MB
+          maxFiles:2,
+          parallelUploads:1,
+          accept: function(file, done) {
+            if (file.name == "justinbieber.jpg") {
+              done("Naha, you don't.");
+            }
+            else { done(); }
+          }
+        };
+        $(function() {
+          // Now that the DOM is fully loaded, create the dropzone, and setup the
+          // event listeners
+          // Prevent Dropzone from auto discovering this element:
+          Dropzone.options.myAwesomeDropzone = false;
+          var myDropzone = new Dropzone("#myAwesomeDropzone");
+          myDropzone.on("success", function(file,response) {
+            /* Maybe display some more file information on your page */
+             console.log("completet", file, response);
+             var response = JSON.parse(response);
+             if (!response.status){
+                 alert(response.err_msg);
+             }else {
+                 $("#uploaded_files").append("<li>"+ file.name +"</li>");
+
+             }
+
+          });
+        })
+</script>
+</html>
