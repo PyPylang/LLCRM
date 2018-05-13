@@ -1,0 +1,50 @@
+{% extends 'backend_base.html' %}
+{% load customer_tags %}
+{% include 'bootstrap_css.html' %}
+{% block style %}
+    <style>
+        .content {
+            margin-left: 20px;
+        }
+
+        tbody a:hover {
+            text-decoration: none;
+            color: black;
+        }
+
+        .content table {
+            font-size: 15px;
+        }
+    </style>
+{% endblock %}
+{% block content %}
+    <div class="content" style="margin-top: 20px">
+        <a href="{% customer_link request.session.username %}" class="btn btn-primary">点击签约</a>
+    </div>
+    <div>
+        <table class="table table-bordered" style="margin-left: 20px;margin-top: 20px">
+            <thead>
+            <tr>
+                <th>咨询产品</th>
+                <th>是否同意签约</th>
+                <th>已签合同</th>
+                <th>签约日期</th>
+                <th>审核日期</th>
+                <th>合同链接</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for enrollment_obj in enrollment_objs %}
+                <tr>
+                    <td>{% format enrollment_obj "class_grade" enrollment_obj.class_grade %}</td>
+                    <td>{% format enrollment_obj "contract_agreed" enrollment_obj.contract_agreed %}</td>
+                    <td>{% format enrollment_obj "contract_approved" enrollment_obj.contract_approved %}</td>
+                    <td>{% format enrollment_obj "contract_signed_date" enrollment_obj.contract_signed_date %}</td>
+                    <td>{% format enrollment_obj "contract_approved_date" enrollment_obj.contract_approved_date %} </td>
+                    <td><a href="{{ enrollment_obj.link }}">{% format enrollment_obj "link" enrollment_obj.link %}</a></td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
