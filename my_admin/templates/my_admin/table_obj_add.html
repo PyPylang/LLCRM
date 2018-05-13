@@ -1,0 +1,40 @@
+{% extends 'backend_base.html' %}
+{% load my_admin_tags %}
+{% block style %}
+    <style>
+        .content {
+            margin-left: 20px;
+        }
+
+        .breadcrumbs, .breadcrumbs a {
+            height: 40px;
+            background-color: #79aec8;
+            color: whitesmoke;
+            font-size: 17px;
+            line-height: 40px;
+            padding-left: 10px;
+        }
+
+        .breadcrumbs a:hover {
+            text-decoration: none;
+            color: #c4dce8;
+        }
+    </style>
+{% endblock %}
+{% block content %}
+    <div class="breadcrumbs">
+        <a href="/myadmin/">首页</a><b style="font-size: 11px">></b>
+        <a href="/myadmin/">{{ app_name }}</a><b style="font-size: 11px">></b>
+        <a href="/myadmin/{{ app_name }}/{{ model_name }}/">{{ model_name }}</a>
+        <b style="font-size: 11px">></b><b style="color: #c4dce8">添加 {{ model_name }}</b>
+    </div>
+    <div class="content">
+        <div style="margin-top: 20px;margin-bottom:20px;height: 40px">
+            <div style="float: left;font-size: 25px">添加 {{ model_name }}</div>
+        </div>
+
+            {% include 'my_admin/form.html' %}
+
+
+    </div>
+{% endblock %}

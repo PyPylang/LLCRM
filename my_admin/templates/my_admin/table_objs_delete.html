@@ -1,0 +1,47 @@
+{% extends 'backend_base.html' %}
+{% load my_admin_tags %}
+{% block style %}
+    <style>
+        .content {
+            margin-left: 20px;
+        }
+
+        .breadcrumbs, .breadcrumbs a {
+            height: 40px;
+            background-color: #79aec8;
+            color: whitesmoke;
+            font-size: 17px;
+            line-height: 40px;
+            padding-left: 10px;
+        }
+
+        .breadcrumbs a:hover {
+            text-decoration: none;
+            color: #c4dce8;
+        }
+    </style>
+{% endblock %}
+{% block content %}
+    <div class="breadcrumbs">
+        <a href="/myadmin/">首页</a><b style="font-size: 11px">></b>
+        <a href="/myadmin/">{{ app_name }}</a><b style="font-size: 11px">></b>
+        <a href="/{{ app_name }}/{{ model_name }}/">{{ model_name }}</a><b style="font-size: 11px">></b>
+        <b style="color: #c4dce8">删除多个对象</b>
+    </div>
+    <div class="content">
+        <div style="margin-top: 30px;font-size: 30px">确定要删除吗？</div>
+        {% for obj in objs %}
+            <div style="margin-top: 30px;font-size: 20px">确定要删除{{ model_name }} "{{ obj }}"? 下列所有关联的项目也会被删除:</div>
+            {% display_all_related_obj obj %}
+        {% endfor %}
+        <div style="float: left;margin-bottom: 20px;margin-top:20px">
+            <form method="post" action="/myadmin/{{ app_name }}/{{ model_name }}/multiple_delete/">{% csrf_token %}
+                <input type="hidden" name="multiple_delete" value="{% multiple_delete_id objs %}  ">
+                <button type="submit" class="btn btn-danger">确定</button>
+            </form>
+        </div>
+        <div style="margin-left: 5%;float: left;margin-bottom: 20px;margin-top:20px">
+            <a href="/myadmin/{{ app_name }}/{{ model_name }}/" class="btn btn-default">返回</a>
+        </div>
+    </div>
+{% endblock %}

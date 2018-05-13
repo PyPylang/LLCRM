@@ -1,0 +1,40 @@
+from . import permission_hook
+    #
+    # ('crm_table_list', '查看mydmin每张表里所有的数据'),
+    # ('crm_table_list_view', '访问mydmin表里每条数据的修改页'),
+    # ('crm_table_list_change', '对mydmin表里的每条数据进行修改'),
+    # ('crm_table_obj_add_view', '访问mydmin每张表的数据增加页'),
+    # ('crm_table_obj_add', '对mydmin每张表进行数据添加'),
+    # re_path(r'^$',views.index,name='index'),
+    # re_path(r'^(?P<app_name>\w+)/(?P<model_name>\w+)/$',
+    #         views.table_obj_list, name="table_obj_list"),
+    # re_path(r'^(?P<app_name>\w+)/(?P<model_name>\w+)/add/$',
+    #         views.table_obj_add, name="table_obj_add"),
+    # re_path(r'^(?P<app_name>\w+)/(?P<model_name>\w+)/(?P<id>\d+)/change/$',
+    #         views.table_obj_change, name="table_obj_change"),
+    # re_path(r'^(?P<app_name>\w+)/(?P<model_name>\w+)/(?P<id>\d+)/delete/$',
+    #         views.table_obj_delete, name="table_obj_delete"),
+    # re_path(r'^(?P<app_name>\w+)/(?P<model_name>\w+)/multiple_delete/$',
+    #         views.table_multiple_delete, name="table_multiple_delete"),
+# 用户权限字典：
+# key对应权限名,
+# ['可反解的url,细分到model',
+# '请求方法',
+# [指定参数],
+# {参数带值},
+# 勾子细分到用户]
+permission_dict={
+    'crm_index':['index','GET',[],{}],
+    'crm_table_list':['table_obj_list','GET',[],{}],
+    'crm_table_change_view':['table_obj_change','GET',[],{}],
+    'crm_table_change_action':['table_obj_change','POST',[],{}],
+    'crm_table_add_view':['table_obj_add','GET',[],{}],
+    'crm_table_add_action':['table_obj_add','POST',[],{}],
+    'crm_table_delete_view':['table_obj_delete','GET',[],{}],
+    'crm_table_delete_action':['table_obj_delete','POST',[],{}],
+    'crm_table_multiple_delete_view':['table_multiple_delete','GET',[],{}],
+    'crm_table_multiple_delete_action':['table_multiple_delete','POST',[],{}],
+    # table_obj_list为测试url_name正常key应该为想限制的那个url的name
+    'crm_view_own_customers':['table_obj_list_sdfsd','GET',[],{},
+                                 permission_hook.only_view_own_customers],
+}

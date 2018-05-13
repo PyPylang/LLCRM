@@ -1,0 +1,110 @@
+{% load my_admin_tags %}
+<div class="form form-inline" style="width: 70%;margin-left: 30px;">
+    <form method="post" onsubmit="BeforeFormSubmit()" enctype="multipart/form-data">
+        {% csrf_token %}
+        {% for field in form %}
+            <span>{{ form.errors }}</span>
+            {% if field.name in admin_class.filter_horizontal %}
+                <div style="margin-top: 15px;margin-bottom: 15px;padding-bottom: 15px;border-bottom: 1px solid gainsboro;">
+                    <div style="float: left;width: 25%">{{ field.label }}:</div>
+                    <div style="height: 280px;">
+                        <div style="float: left;width: 400px;height: 250px;border: 1px solid gainsboro">
+                            <div style="margin: 10px">
+                                <label><i class='fa fa-search'></i></label>
+                                <input style="width: 345px;" oninput="fuzzSearch(this)" name="_q" type="search" class="form-control" placeholder="查询">
+                            </div>
+                            <select id="{{ field.name }}_from" target_id="{{ field.name }}_to" multiple class="form-control "
+                                    style="width: 400px;height: 199px;">
+                                {% get_available_m2m_data_data form field.name admin_class as available_m2m_data %}
+                                {% for obj in available_m2m_data %}
+                                    <option ondblclick="move(this,'{{ field.name }}_to')"
+                                            value="{{ obj.id }}">{{ obj }}</option>
+                                {% endfor %}
+                            </select>
+                            <button class="active"  type="button" onclick="MoveAll(this)" style="border: none;width: 400px;text-align: center;margin-top: 10px">选择所有
+                                <i class="fa fa-chevron-circle-right"></i></button>
+                            <span style="color: red">{{ field.errors.0 }}</span>
+                        </div>
+                        <div style="float: left;margin-left: 30px;width: 400px;height: 240px;border: 1px solid gainsboro">
+                            <div style="margin: 10px">选中的 {{ field.label }}</div>
+                            <select tag="selected_m2m" name="{{ field.name }}" id="{{ field.name }}_to" target_id="{{ field.name }}_from"
+                                    multiple class="form-control " style="width: 400px;height: 199px;">
+                                {% get_selected_m2m_data_data form field.name admin_class as selected_m2m_data %}
+                                {% for obj in selected_m2m_data %}
+                                    <option ondblclick="move(this,'{{ field.name }}_from')"
+                                            value="{{ obj.id }}" >{{ obj }}</option>
+                                {% endfor %}
+                            </select>
+                            <button  type="button" onclick="MoveAll(this)" style="border: none;width: 400px;text-align: center;margin-top: 10px">
+                                <i class="fa fa-chevron-circle-left"></i> 移除所有
+                            </button>
+                        </div>
+                        <span style="color: red">{{ field.errors.0 }}</span>
+                    </div>
+                </div>
+            {% else %}
+                <div class="field"
+                     style="margin-top: 15px;margin-bottom: 15px;padding-bottom: 15px;border-bottom: 1px solid gainsboro;">
+                    <div style="float: left;width: 25%">{{ field.label }}:</div>
+                   {% if field.name == 'img'  %}
+                       <div style="margin-left: 25%">{{ field }}</div>
+                    {% else %}
+                    <div>{{ field }}</div>
+                   {% endif %}
+                    <span style="color: red">{{ field.errors.0 }}</span>
+                </div>
+            {% endif %}
+        {% endfor %}
+        {% if not admin_class.form_add %}
+            {#            判断是修改还是增加，修改的话有些字段是只读的另外显示#}
+            {% for field in admin_class.readonly_fields %}
+                <div class="field"
+                     style="margin-top: 15px;margin-bottom: 15px;padding-bottom: 15px;border-bottom: 1px solid gainsboro;">
+                    <div style="float: left;width: 25%">{% column_verbose_name field admin_class %}:</div>
+                    <p>{% get_field_name admin_class form field %} </p>
+                </div>
+            {% endfor %}
+        {% endif %}
+        <div style="margin-left: 5%;float: left">
+            <a href="/myadmin/{{ app_name }}/{{ model_name }}/{{ id }}/delete/" class="btn btn-danger" style="margin-bottom: 20px">删除</a>
+        </div>
+        <div style="margin-right: 5%;float: right">
+            <button type="submit" class="btn btn-primary" style="margin-bottom: 20px">保存</button>
+        </div>
+    </form>
+</div>
+{% block js %}
+    <script>
+        function move(ele, target_id) {
+            var new_target_id = $(ele).parent().attr('id');
+{#             <option ondblclick="move(this,'{{ field.name }}_from')"#}
+{#                                            value="{{ obj.id }}" >{{ obj }}</option>#}
+            var option = "<option " + "ondblclick=move(this,'" + new_target_id + "')" + " value=" + $(ele).val() + ">" + $(ele).text() + "</option>";
+            $("#" + target_id).append(option);
+            $(ele).remove();
+        }
+        function BeforeFormSubmit() {
+            $("select[tag] option").prop('selected', true);
+        }
+        function MoveAll(ths) {
+            $(ths).prev().children().each(function(k,v){
+                var ele=$(v);
+{#                全部移动只能操作select标签的id，所以多加一个target_id属性#}
+                var target_id= $(v).parent().attr('target_id');
+{#                console.log(target_id)#}
+                move(ele, target_id)
+            })
+        }
+    function fuzzSearch(ths){
+        var search_text=$(ths).val().toUpperCase();
+        $(ths).parent().next().children().each((function(){
+            if($(this).text().toUpperCase().search(search_text)!=-1){
+                $(this).show();
+            }
+            else {
+                $(this).hide()
+            }
+        }))
+    }
+    </script>
+{% endblock %}

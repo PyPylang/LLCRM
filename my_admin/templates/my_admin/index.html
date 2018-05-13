@@ -1,0 +1,42 @@
+{% extends 'backend_base.html' %}
+{% load my_admin_tags %}
+{% block style %}
+    <style>
+        .content{
+            margin-left: 20px;
+        }
+    tbody a:hover{
+        text-decoration: none;
+        color: black;
+    }
+    .content table{
+        font-size: 15px;
+    }
+    </style>
+{% endblock %}
+{% block content %}
+    <div class="content">
+        <p style="padding-top: 20px;padding-bottom:20px;font-size: 25px">站点管理系统</p>
+        {% for app_name,app_tables in site.enabled_admin.items %}
+            <table class="table">
+                <thead>
+
+                <tr class="info">
+                    <th>{{ app_name }}</th>
+                    <th></th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for table_name in app_tables %}
+                    <tr>
+                        <td><a href="/myadmin/{{ app_name }}/{{ table_name }}/">{{ table_name }}</a></td>
+                        <td><a href="/myadmin/{{ app_name }}/{{ table_name }}/add/"><i class="fa fa-plus" style="color: green"></i>&nbsp;添加</a></td>
+                        <td><a href="/myadmin/{{ app_name }}/{{ table_name }}/"><i class="fa fa-pencil" style="color: gold"></i>&nbsp;修改</a></td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        {% endfor %}
+    </div>
+{% endblock %}
